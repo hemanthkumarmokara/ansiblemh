@@ -12,19 +12,15 @@
         state: present
         update_cache: yes
 
-    - name: Install required Python libraries
-      pip:
-        name:
-          - flask
-          - openai
-          - requests
-          - certifi
-          - urllib3
-        executable: pip3
+    - name: Create a virtual environment
+      command: python3 -m venv /home/hemanthvm2/netbott/venv
 
-    - name: Run app.py in the background
-      command: nohup python3 /path/to/app.py > app.log 2>&1 &
+    - name: Install required Python libraries inside the virtual environment
+      command: /home/hemanthvm2/netbott/venv/bin/pip install flask openai requests certifi urllib3
+
+    - name: Run app.py in the background using the virtual environment
+      command: nohup /home/hemanthvm2/netbott/venv/bin/python /home/hemanthvm2/netbott/app.py > /home/hemanthvm2/netbott/app.log 2>&1 &
       args:
-        chdir: /path/to/  # Change to the directory where app.py is located
-      async: 1000  # Allow it to run in the background
-      poll: 0  # Don't wait for it to complete
+        chdir: /home/hemanthvm2/netbott  # Change to the directory where app.py is located
+      async: 1000
+      poll: 0
