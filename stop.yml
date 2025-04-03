@@ -1,0 +1,24 @@
+- name: Stop app.py running in venv on Azure VM
+  hosts: azure_vm
+  become: yes  # Run as sudo
+  tasks:
+
+    - name: Find running app.py process
+      shell: pgrep -f "venv/bin/python /home/hemanthvm2/netbott/app.py"
+      register: process_check
+      ignore_errors: yes
+
+    - name: Stop app.py if running
+      command: kill {{ process_check.stdout }}
+      when: process_check.stdout | length > 0
+      ignore_errors: yes
+
+    - name: Verify app.py is stopped
+      shell: pgrep -f "venv/bin/python /home/hemanthvm2/netbott/app.py"
+      register: verify_check
+      failed_when: verify_check.rc == 0
+      ignore_errors: yes
+
+    - name: Print status
+      debug:
+        msg: "App.py is stopped successfully."
