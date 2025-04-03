@@ -1,0 +1,30 @@
+- name: Run app.py on Azure VM
+  hosts: azure_vm
+  become: yes  # Run as sudo
+  tasks:
+
+    - name: Install required system packages
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+        update_cache: yes
+
+    - name: Install required Python libraries
+      pip:
+        name:
+          - flask
+          - openai
+          - requests
+          - certifi
+          - urllib3
+        executable: pip3
+
+    - name: Run app.py in the background
+      command: nohup python3 /path/to/app.py > app.log 2>&1 &
+      args:
+        chdir: /path/to/  # Change to the directory where app.py is located
+      async: 1000  # Allow it to run in the background
+      poll: 0  # Don't wait for it to complete
